@@ -8,32 +8,14 @@ function getDelivery(id){
     return deliveries.find(delivery => delivery.id===id)
 }
 
-function decreasingPricing(volume){
-	if (volume>25){
-		return 0.5;
-	}
-	else if (volume>10){
-		return 0.3;
-	}
-	else if (volume>5){
-		return 0.1;
-	}
-}
-
 function setPrice(deliveries){
 	 return deliveries.map(delivery => {
         const trucker=getTrucker(delivery.truckerId);
-        const price=(trucker.pricePerKm*delivery.distance + trucker.pricePerVolume*delivery.volume)*decreasingPricing(delivery.volume);;
-        const commission={
-            insurance: price*0.15,
-            treasury: delivery.distance%500+1,
-            convargo: price*0.15-delivery.commission.insurance
-        }
+        const price=(trucker.pricePerKm*delivery.distance + trucker.pricePerVolume*delivery.volume);
 
         return {
             ...delivery,
-            price,
-            commission
+            price
         }
     })
 }

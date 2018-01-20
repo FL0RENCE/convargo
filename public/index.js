@@ -47,6 +47,44 @@ function setPrice(deliveries){
     })
 }
 
+function payments(actors){
+	return actors.map(actors=>{
+		let delivery=getDelivery(shipping.deliveryId)
+        return {
+            ...shipping,
+            payment: shipping.payment.map(bill => {
+                return {...bill,
+                    amount: getAmount(delivery, bill.who)
+                }
+            })
+        }
+	})
+}
+
+function getAmount(delivery, who){
+    switch(who){
+        case "shipper":
+            return (delivery.price +   (delivery.options.deductibleReduction?200:1000))
+            break;
+        case "trucker":
+            return delivery.price*0.7
+            break;
+        case "insurance":
+            return delivery.commission.insurance
+            break
+        case "treasury":
+            return delivery.commission.treasury
+            break
+        case "convargo":
+            return delivery.commission.convargo +
+            (delivery.options.deductibleReduction?200:1000)
+            break
+        default:
+            return 0.
+            break
+    }
+}
+
 //list of truckers
 //useful for ALL 5 steps
 //could be an array of objects that you fetched from api or database

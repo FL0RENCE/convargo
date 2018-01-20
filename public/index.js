@@ -1,5 +1,31 @@
 'use strict';
 
+function getTrucker(id){
+    return truckers.find(trucker => trucker.id === id)
+}
+
+function getDelivery(id){
+    return deliveries.find(delivery => delivery.id===id)
+}
+
+function setPrice(deliveries){
+	 return deliveries.map(delivery => {
+        const trucker=getTrucker(delivery.truckerId);
+        const price=trucker.pricePerKm*delivery.distance + trucker.pricePerVolume*delivery.volume;
+        const commission={
+            insurance: price*0.15,
+            treasury: delivery.distance%500+1,
+            convargo: price*0.15-delivery.commission.insurance
+        }
+
+        return {
+            ...delivery,
+            price,
+            commission
+        }
+    })
+}
+
 //list of truckers
 //useful for ALL 5 steps
 //could be an array of objects that you fetched from api or database
@@ -25,117 +51,52 @@ const truckers = [{
 //The `price` is updated from step 1 and 2
 //The `commission` is updated from step 3
 //The `options` is useful from step 4
-const deliveries = [
-	{
-		'id': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
-		'shipper': 'bio-gourmet',
-		'truckerId': 'f944a3ff-591b-4d5b-9b67-c7e08cba9791',
-		'distance': 100,
-		'volume': 4,
-		'options': {
-			'deductibleReduction': false
-		},
-		'price': 0,
-		'commission': {
-			'insurance': 0,
-			'treasury': 0,
-			'convargo': 0
-		}
-	}, 
-	{
-		'id': '65203b0a-a864-4dea-81e2-e389515752a8',
-		'shipper': 'librairie-lu-cie',
-		'truckerId': '165d65ec-5e3f-488e-b371-d56ee100aa58',
-		'distance': 650,
-		'volume': 12,
-		'options': {
-			'deductibleReduction': true
-		},
-		'price': 0,
-		'commission': {
-			'insurance': 0,
-			'treasury': 0,
-			'convargo': 0
-		}
-	},
-	{
-		'id': '94dab739-bd93-44c0-9be1-52dd07baa9f6',
-		'shipper': 'otacos',
-		'truckerId': '6e06c9c0-4ab0-4d66-8325-c5fa60187cf8',
-		'distance': 1250,
-		'volume': 30,
-		'options': {
-			'deductibleReduction': true
-		},
-		'price': 0,
-		'commission': {
-			'insurance': 0,
-			'treasury': 0,
-			'convargo': 0
-		}
-	}
-];
-
-for (var i = 0; i < deliveries.length; i++) {
-    for (var j= 0; j<truckers.length; i++){
-		var discount=0;
-		if (deliveries[i].volume>25){
-			discount=0.5;
-		}
-		else if (deliveries[i].volume>10){
-			discount=0.3;
-		}
-		else if (deliveries[i].volume>5){
-			discount=0.1;
-		}
-		if (deliveries[i].truckerId==truckers[j].id){
-			if (deliveries[i].options.deductibleReduction){
-				deliveries[i].price=(deliveries[i].volume*(truckers[j].pricePerVolume+1)+deliveries[i].distance*truckers[j].pricePerKm)*(1-discount);
-			}
-			else{
-				deliveries[i].price=(deliveries[i].volume*truckers[j].pricePerVolume+deliveries[i].distance*truckers[j].pricePerKm)*(1-discount);
-			}
-		}	
-	}
-	deliveries[i].commission.insurance=0.15*deliveries[i].price;
-	deliveries[i].commission.treasury=deliveries[i].distance%500+1;
-	deliveries[i].commission.convargo=0.15*edliveries[i].price-deliveries[i].commission.treasury;
-	deliveries[i].payments=[
-		{'shipper':
-			{
-			"type": "debit",
-			"amount": deliveries[i].price
-			}
-		},
-		{'trucker':
-			{
-			"type": "credit",
-			"amount": deliveries[i].price-deliveries[i].commission.insurance-deliveries[i].commission.treasury-deliveries[i].commission.convargo
-			}
-		},
-		{'insurance':
-			{
-			"type": "credit",
-			"amount": deliveries[i].commission.insurance
-			}
-		},
-		{'treasury':
-			{
-			"type": "credit",
-			"amount": deliveries[i].commission.treasury
-			}
-		},
-		{'convargo':
-			{
-			"type": "credit",
-			"amount": deliveries[i].commission.convargo
-			}
-		}
-	];
-	if (deliveries[i].options.deductibleReduction){
-		deliveries[i].payments.convargo.amount+=deliveries[i].volume*1;
-	}
-}
+const deliveries = [{
+  'id': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
+  'shipper': 'bio-gourmet',
+  'truckerId': 'f944a3ff-591b-4d5b-9b67-c7e08cba9791',
+  'distance': 100,
+  'volume': 4,
+  'options': {
+    'deductibleReduction': false
+  },
+  'price': 0,
+  'commission': {
+    'insurance': 0,
+    'treasury': 0,
+    'convargo': 0
+  }
+}, {
+  'id': '65203b0a-a864-4dea-81e2-e389515752a8',
+  'shipper': 'librairie-lu-cie',
+  'truckerId': '165d65ec-5e3f-488e-b371-d56ee100aa58',
+  'distance': 650,
+  'volume': 12,
+  'options': {
+    'deductibleReduction': true
+  },
+  'price': 0,
+  'commission': {
+    'insurance': 0,
+    'treasury': 0,
+    'convargo': 0
+  }
+}, {
+  'id': '94dab739-bd93-44c0-9be1-52dd07baa9f6',
+  'shipper': 'otacos',
+  'truckerId': '6e06c9c0-4ab0-4d66-8325-c5fa60187cf8',
+  'distance': 1250,
+  'volume': 30,
+  'options': {
+    'deductibleReduction': true
+  },
+  'price': 0,
+  'commission': {
+    'insurance': 0,
+    'treasury': 0,
+    'convargo': 0
+  }
+}];
 
 //list of actors for payment
 //useful from step 5

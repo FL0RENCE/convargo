@@ -12,10 +12,16 @@ function setPrice(deliveries){
 	 return deliveries.map(delivery => {
         const trucker=getTrucker(delivery.truckerId);
         const price=(trucker.pricePerKm*delivery.distance + trucker.pricePerVolume*delivery.volume);
+        const commission={
+            insurance: price*0.15,
+            treasury: delivery.distance%500+1,
+            convargo: price*0.15-delivery.commission.insurance
+        }
 
         return {
             ...delivery,
-            price
+            price,
+            commission
         }
     })
 }

@@ -8,10 +8,22 @@ function getDelivery(id){
     return deliveries.find(delivery => delivery.id===id)
 }
 
+function decreasingPricing(volume){
+	if (volume>25){
+		return 0.5;
+	}
+	else if (volume>10){
+		return 0.3;
+	}
+	else if (volume>5){
+		return 0.1;
+	}
+}
+
 function setPrice(deliveries){
 	 return deliveries.map(delivery => {
         const trucker=getTrucker(delivery.truckerId);
-        const price=(trucker.pricePerKm*delivery.distance + trucker.pricePerVolume*delivery.volume);
+        const price=(trucker.pricePerKm*delivery.distance + trucker.pricePerVolume*delivery.volume)*decreasingPricing(delivery.volume);
 
         return {
             ...delivery,
